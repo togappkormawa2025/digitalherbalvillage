@@ -32,14 +32,15 @@
             @forelse($plants as $plant)
                 <tr class="hover:bg-gray-50 transition">
                     <td class="px-4 py-3 font-medium">{{ $plant->name }}</td>
-                    <td class="px-4 py-3">
-                        @if($plant->image)
-                            <img src="{{ asset('storage/'.$plant->image) }}"
-                                 class="w-14 h-14 object-cover rounded-md border">
-                        @else
-                            <span class="text-gray-400">-</span>
-                        @endif
-                    </td>
+<td class="px-4 py-3">
+    @if($plant->image)
+        <img src="{{ asset($plant->image) }}"
+             class="w-14 h-14 object-cover rounded-md border">
+    @else
+        <span class="text-gray-400">-</span>
+    @endif
+</td>
+
                     <td class="px-4 py-3">{{ Str::limit($plant->description, 60) }}</td>
                     <td class="px-4 py-3 text-center">
                         <div class="flex justify-center gap-2">
