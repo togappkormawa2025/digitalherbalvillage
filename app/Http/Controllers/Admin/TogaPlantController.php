@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\TogaPlant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TogaPlantController extends Controller
 {
@@ -19,54 +20,61 @@ class TogaPlantController extends Controller
         return view('admin.toga.create');
     }
 
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-        'description' => 'required|string',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'image'       => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'description' => 'required|string',
+        ]);
 
-    // Simpan gambar
-    $path = $request->file('image')->store('toga', 'public');
+        // Simpan gambar ke storage
+        $validated['image'] = $request->file('image')->store('toga', 'public');
 
-    TogaPlant::create([
-        'name' => $validated['name'],
-        'image' => $path,
-        'description' => $validated['description'],
-    ]);
+        TogaPlant::create($validated);
 
-    return redirect()->route('admin.toga.index')->with('success', 'Tanaman TOGA berhasil ditambahkan');
-}
-
+        return redirect()->route('admin.toga.index')
+            ->with('success', 'Tanaman TOGA berhasil ditambahkan');
+    }
 
     public function edit(TogaPlant $toga)
     {
         return view('admin.toga.edit', compact('toga'));
     }
 
-  public function update(Request $request, TogaPlant $toga)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        'description' => 'required|string',
-    ]);
+    public function update(Request $request, TogaPlant $toga)
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'description' => 'required|string',
+        ]);
 
-    if ($request->hasFile('image')) {
-        $path = $request->file('image')->store('toga', 'public');
-        $validated['image'] = $path;
+        // Jika ada gambar baru, hapus lama lalu simpan baru
+        if ($request->hasFile('image')) {
+            if ($toga->image && Storage::disk('public')->exists($toga->image)) {
+                Storage::disk('public')->delete($toga->image);
+            }
+
+            $validated['image'] = $request->file('image')->store('toga', 'public');
+        }
+
+        $toga->update($validated);
+
+        return redirect()->route('admin.toga.index')
+            ->with('success', 'Tanaman TOGA berhasil diperbarui');
     }
-
-    $toga->update($validated);
-
-    return redirect()->route('admin.toga.index')->with('success', 'Tanaman TOGA berhasil diperbarui');
-}
-
 
     public function destroy(TogaPlant $toga)
     {
+        // Hapus gambar dari storage kalau ada
+        if ($toga->image && Storage::disk('public')->exists($toga->image)) {
+            Storage::disk('public')->delete($toga->image);
+        }
+
         $toga->delete();
-        return redirect()->route('admin.toga.index')->with('success', 'Tanaman berhasil dihapus!');
+
+        return redirect()->route('admin.toga.index')
+            ->with('success', 'Tanaman TOGA berhasil dihapus');
     }
 }
