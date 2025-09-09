@@ -25,12 +25,14 @@
                 </label>
                 <input type="file" name="image" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" accept="image/*" @if(!$toga->image) required @endif>
 
-                @if($toga->image)
-                    <div class="mt-4">
-                        <p class="text-gray-600 mb-2">Preview Gambar Saat Ini:</p>
-                        <img src="{{ asset('storage/'.$toga->image) }}" class="w-32 sm:w-48 md:w-56 rounded-lg shadow-md object-cover">
-                    </div>
-                @endif
+@if($toga->image)
+    <div class="mt-4">
+        <p class="text-gray-600 mb-2">Preview Gambar Saat Ini:</p>
+        <img src="{{ asset($toga->image) }}"
+             class="w-32 sm:w-48 md:w-56 rounded-lg shadow-md object-cover">
+    </div>
+@endif
+
             </div>
 
             <!-- Deskripsi -->
