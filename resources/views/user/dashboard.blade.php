@@ -28,10 +28,9 @@
     <!-- Image Card -->
     <div class="flex justify-center">
         <div class="w-full max-w-md rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition">
- <img src="{{ asset('images/toga.png') }}" 
+<img src="{{ asset('public/images/toga.png') }}" 
      alt="Ilustrasi informasi" 
-     class="w-full h-[500px] object-cover rounded-lg shadow-md">
-
+     class="w-full h-[500px] object-cover">
         </div>
     </div>
 </section>
